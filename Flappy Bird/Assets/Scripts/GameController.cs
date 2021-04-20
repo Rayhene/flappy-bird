@@ -1,6 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
+public enum MachineState{
+    FirstTap,
+    InGame,
+    GameOver
+}
 
 public class GameController : MonoBehaviour
 {
@@ -9,6 +16,8 @@ public class GameController : MonoBehaviour
     public SpriteRenderer groundRender;
     public float speedParallax;
 
+    public MachineState currentState;
+
     public GameObject pipe;
     public float speedPipe;
 
@@ -16,6 +25,12 @@ public class GameController : MonoBehaviour
     private float currentTimeToSpawn;
 
     public Transform spawnPosTop, spawnPosBot, spawnPos;
+
+    public int currentScore;
+    public Text scoreTxt;
+    public Text finalScoreTxt;
+
+    public GameObject gameOverPanel;
 
 
     void Update(){
@@ -26,10 +41,25 @@ public class GameController : MonoBehaviour
 
         currentTimeToSpawn += Time.deltaTime;
 
-        if (currentTimeToSpawn >= timeToSpawn) { 
-            SpawnPipe();
-            currentTimeToSpawn = 0;
+        if(currentState == MachineState.InGame)
+        {
+            if (currentTimeToSpawn >= timeToSpawn)
+            {
+                SpawnPipe();
+                currentTimeToSpawn = 0;
+            }
         }
+      
+
+        scoreTxt.text = currentScore.ToString();
+    }
+
+    public void OpenGameOver()
+    {
+        finalScoreTxt.text = currentScore.ToString();
+        gameOverPanel.SetActive(true);
+        currentState = MachineState.GameOver;
+
     }
 
     void SpawnPipe() {
@@ -38,7 +68,7 @@ public class GameController : MonoBehaviour
         float posYSpawn = Random.Range(spawnPosBot.position.y, spawnPosTop.position.y);
         tempPipe.transform.position = new Vector2(spawnPosTop.position.x, posYSpawn);
         tempPipe.GetComponent<Rigidbody2D>().velocity = -tempPipe.transform.right * speedPipe;
-        Destroy(tempPipe, 3);
+        Destroy(tempPipe, 5);
 
     }
 
